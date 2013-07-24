@@ -7,6 +7,7 @@
 package org.jboss.forge.plugin.idea.actions;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -15,8 +16,11 @@ import javax.swing.JList;
 
 import org.jboss.forge.addon.ui.UICommand;
 import org.jboss.forge.addon.ui.wizard.UIWizardStep;
+import org.jboss.forge.furnace.addons.AddonId;
 import org.jboss.forge.furnace.addons.AddonRegistry;
+import org.jboss.forge.furnace.repositories.AddonRepository;
 import org.jboss.forge.furnace.services.ExportedInstance;
+import org.jboss.forge.furnace.util.Assert;
 import org.jboss.forge.plugin.idea.ForgeService;
 import org.jboss.forge.plugin.idea.wizards.ForgeWizardDialog;
 import org.jboss.forge.plugin.idea.wizards.ForgeWizardModel;
@@ -50,15 +54,14 @@ public class ShowForgeMenuAction extends AnAction {
 		if (active)
 			return;
 		active = true;
-		final VirtualFile[] selectedFiles = e
-				.getData(PlatformDataKeys.VIRTUAL_FILE_ARRAY);
 
+        final VirtualFile[] selectedFiles = e.getData(PlatformDataKeys.VIRTUAL_FILE_ARRAY);
 		final JBList list = new JBList();
-		DefaultListModel model = new DefaultListModel();
+        final Project project = e.getData(DataKeys.PROJECT);
 
-		final Project project = e.getData(DataKeys.PROJECT);
-
-		final List<UICommand> allCandidates = getAllCandidates();
+        final List<UICommand> allCandidates;
+        DefaultListModel model = new DefaultListModel();
+        allCandidates = getAllCandidates();
 		model.setSize(allCandidates.size());
 
 		list.setCellRenderer(new ListCellRendererWrapper<UICommand>() {
@@ -68,7 +71,6 @@ public class ShowForgeMenuAction extends AnAction {
 				if (data != null) {
 					setIcon(AllIcons.Nodes.Plugin);
 					setText(data.getMetadata().getName());
-
 					// if (hasFocus)
 					// {
 					// HintManager.getInstance().showInformationHint(editor,
@@ -103,6 +105,7 @@ public class ShowForgeMenuAction extends AnAction {
 		}).createPopup().showCenteredInCurrentWindow(project);
 	}
 
+	// Opens an IntelliJ wizard based on a command
 	private void openWizard(UICommand command, VirtualFile[] files) {
 		ForgeWizardModel model = new ForgeWizardModel(command.getMetadata()
 				.getName(), command, files);
@@ -110,12 +113,15 @@ public class ShowForgeMenuAction extends AnAction {
 		dialog.show();
 	}
 
+    // Gets all UI commands from the Forge runtime
 	private List<UICommand> getAllCandidates() {
 		List<UICommand> result = new ArrayList<UICommand>();
 		AddonRegistry addonRegistry = ForgeService.INSTANCE.getAddonRegistry();
+
 		Set<ExportedInstance<UICommand>> exportedInstances = addonRegistry
 				.getExportedInstances(UICommand.class);
-		for (ExportedInstance<UICommand> instance : exportedInstances) {
+
+        for (ExportedInstance<UICommand> instance : exportedInstances) {
 			UICommand uiCommand = instance.get();
 			if (!(uiCommand instanceof UIWizardStep)) {
 				result.add(uiCommand);
@@ -124,4 +130,18 @@ public class ShowForgeMenuAction extends AnAction {
 		return result;
 	}
 
+	private List<String> getAllAddons() {
+		List<AddonRepository> repos = Collections.unmodifiableList(ForgeService.INSTANCE.getAddonRepositories());
+		List<String> addonNames = new ArrayList<String>();
+
+		for(AddonRepository repo : repos) {
+			List<AddonId> addonIds = repo.listEnabled();
+
+			for(AddonId id : addonIds) {
+				addonNames.add(id.getName());
+			}
+		}
+
+		return addonNames;
+	}
 }

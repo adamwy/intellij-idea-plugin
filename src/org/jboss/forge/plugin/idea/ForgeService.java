@@ -11,7 +11,10 @@ import org.jboss.forge.addon.convert.ConverterFactory;
 import org.jboss.forge.furnace.ContainerStatus;
 import org.jboss.forge.furnace.Furnace;
 import org.jboss.forge.furnace.addons.AddonRegistry;
+import org.jboss.forge.furnace.repositories.AddonRepository;
 import org.jboss.forge.furnace.services.ExportedInstance;
+
+import java.util.List;
 
 /**
  * This is a singleton for the {@link Forge} class.
@@ -44,6 +47,12 @@ public enum ForgeService
    {
       return forge.getAddonRegistry();
    }
+
+   public List<AddonRepository> getAddonRepositories()
+   {
+        return forge.getRepositories();
+   }
+
 
    public void stop()
    {
