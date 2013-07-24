@@ -14,13 +14,14 @@ import java.util.Set;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 
+import com.intellij.codeInsight.hint.HintManager;
+import com.intellij.openapi.fileEditor.FileEditorManager;
 import org.jboss.forge.addon.ui.UICommand;
 import org.jboss.forge.addon.ui.wizard.UIWizardStep;
 import org.jboss.forge.furnace.addons.AddonId;
 import org.jboss.forge.furnace.addons.AddonRegistry;
 import org.jboss.forge.furnace.repositories.AddonRepository;
 import org.jboss.forge.furnace.services.ExportedInstance;
-import org.jboss.forge.furnace.util.Assert;
 import org.jboss.forge.plugin.idea.ForgeService;
 import org.jboss.forge.plugin.idea.wizards.ForgeWizardDialog;
 import org.jboss.forge.plugin.idea.wizards.ForgeWizardModel;
@@ -42,45 +43,49 @@ import com.intellij.ui.components.JBList;
 /**
  * Creates a popup list and displays all the currently registered
  * {@link UICommand} instances
- * 
+ *
  * @author <a href="mailto:ggastald@redhat.com">George Gastaldi</a>
- * 
  */
 public class ShowForgeMenuAction extends AnAction {
 	volatile boolean active;
 
 	@Override
-	public void actionPerformed(final AnActionEvent e) {
+	public void actionPerformed(final AnActionEvent e)
+	{
 		if (active)
 			return;
 		active = true;
 
-        final VirtualFile[] selectedFiles = e.getData(PlatformDataKeys.VIRTUAL_FILE_ARRAY);
+		final VirtualFile[] selectedFiles = e.getData(PlatformDataKeys.VIRTUAL_FILE_ARRAY);
 		final JBList list = new JBList();
-        final Project project = e.getData(DataKeys.PROJECT);
+		final Project project = e.getData(DataKeys.PROJECT);
 
-        final List<UICommand> allCandidates;
-        DefaultListModel model = new DefaultListModel();
-        allCandidates = getAllCandidates();
+		final List<UICommand> allCandidates;
+		DefaultListModel model = new DefaultListModel();
+		allCandidates = getAllCandidates();
 		model.setSize(allCandidates.size());
 
 		list.setCellRenderer(new ListCellRendererWrapper<UICommand>() {
 			@Override
 			public void customize(JList list, UICommand data, int index,
-					boolean selected, boolean hasFocus) {
-				if (data != null) {
+			                      boolean selected, boolean hasFocus)
+			{
+				if (data != null)
+				{
 					setIcon(AllIcons.Nodes.Plugin);
 					setText(data.getMetadata().getName());
-					// if (hasFocus)
-					// {
-					// HintManager.getInstance().showInformationHint(editor,
-					// data.getMetadata().getDescription());
-					// }
+
+					if (hasFocus)
+					{
+						HintManager.getInstance().showInformationHint(FileEditorManager.getInstance(project).getSelectedTextEditor(),
+								data.getMetadata().getDescription());
+					}
 				}
 			}
 		});
 
-		for (int i = 0; i < allCandidates.size(); i++) {
+		for (int i = 0; i < allCandidates.size(); i++)
+		{
 			model.set(i, allCandidates.get(i));
 		}
 
@@ -91,13 +96,15 @@ public class ShowForgeMenuAction extends AnAction {
 		listPopupBuilder.setTitle("Run a Forge command");
 		listPopupBuilder.addListener(new JBPopupAdapter() {
 			@Override
-			public void onClosed(LightweightWindowEvent event) {
+			public void onClosed(LightweightWindowEvent event)
+			{
 				ShowForgeMenuAction.this.active = false;
 			}
 		});
 		listPopupBuilder.setItemChoosenCallback(new Runnable() {
 			@Override
-			public void run() {
+			public void run()
+			{
 				int selectedIndex = list.getSelectedIndex();
 				UICommand selectedCommand = allCandidates.get(selectedIndex);
 				openWizard(selectedCommand, selectedFiles);
@@ -105,43 +112,68 @@ public class ShowForgeMenuAction extends AnAction {
 		}).createPopup().showCenteredInCurrentWindow(project);
 	}
 
-	// Opens an IntelliJ wizard based on a command
-	private void openWizard(UICommand command, VirtualFile[] files) {
+	/**
+	 * Opens an Forge wizard in Intellij starting with a {@link UICommand}
+	 *
+	 * @param command {@link UICommand} to start the wizard
+	 * @param files   plugin state persistency TODO not used yet
+	 */
+	private void openWizard(UICommand command, VirtualFile[] files)
+	{
 		ForgeWizardModel model = new ForgeWizardModel(command.getMetadata()
 				.getName(), command, files);
 		ForgeWizardDialog dialog = new ForgeWizardDialog(model);
 		dialog.show();
 	}
 
-    // Gets all UI commands from the Forge runtime
-	private List<UICommand> getAllCandidates() {
+	/**
+	 * Gets all {@link UICommand}s from the Furnace container
+	 *
+	 * @return List of {@link UICommand}s
+	 */
+	private List<UICommand> getAllCandidates()
+	{
 		List<UICommand> result = new ArrayList<UICommand>();
 		AddonRegistry addonRegistry = ForgeService.INSTANCE.getAddonRegistry();
 
 		Set<ExportedInstance<UICommand>> exportedInstances = addonRegistry
 				.getExportedInstances(UICommand.class);
 
-        for (ExportedInstance<UICommand> instance : exportedInstances) {
+		for (ExportedInstance<UICommand> instance : exportedInstances)
+		{
 			UICommand uiCommand = instance.get();
-			if (!(uiCommand instanceof UIWizardStep)) {
+			if (!(uiCommand instanceof UIWizardStep))
+			{
 				result.add(uiCommand);
 			}
 		}
 		return result;
 	}
 
-	private List<String> getAllAddons() {
+
+	// begin TODO delete
+
+	/**
+	 * Gets all addons names
+	 *
+	 * @return String list
+	 */
+	private List<String> getAllAddons()
+	{
 		List<AddonRepository> repos = Collections.unmodifiableList(ForgeService.INSTANCE.getAddonRepositories());
 		List<String> addonNames = new ArrayList<String>();
 
-		for(AddonRepository repo : repos) {
+		for (AddonRepository repo : repos)
+		{
 			List<AddonId> addonIds = repo.listEnabled();
 
-			for(AddonId id : addonIds) {
+			for (AddonId id : addonIds)
+			{
 				addonNames.add(id.getName());
 			}
 		}
 
 		return addonNames;
 	}
+	// end TODO delete
 }

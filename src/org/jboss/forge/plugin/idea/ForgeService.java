@@ -20,63 +20,61 @@ import java.util.List;
  * This is a singleton for the {@link Forge} class.
  *
  * @author <a href="mailto:ggastald@redhat.com">George Gastaldi</a>
- *
  */
 
-public enum ForgeService
-{
-   INSTANCE;
+public enum ForgeService {
+	INSTANCE;
+	private transient Furnace forge;
 
-   private transient Furnace forge;
+	private ForgeService()
+	{
+	}
 
-   private ForgeService()
-   {
-   }
+	public void setForge(Furnace forge)
+	{
+		this.forge = forge;
+	}
 
-   public void setForge(Furnace forge)
-   {
-      this.forge = forge;
-   }
+	public void start(ClassLoader loader)
+	{
+		forge.startAsync(loader);
+	}
 
-   public void start(ClassLoader loader)
-   {
-      forge.startAsync(loader);
-   }
+	public AddonRegistry getAddonRegistry()
+	{
+		return forge.getAddonRegistry();
+	}
 
-   public AddonRegistry getAddonRegistry()
-   {
-      return forge.getAddonRegistry();
-   }
+	// begin TODO delete
+	public List<AddonRepository> getAddonRepositories()
+	{
+		return forge.getRepositories();
+	}
+	// end TODO delete
 
-   public List<AddonRepository> getAddonRepositories()
-   {
-        return forge.getRepositories();
-   }
+	public void stop()
+	{
+		forge.stop();
+	}
 
+	public ContainerStatus getContainerStatus()
+	{
+		return (forge == null) ? ContainerStatus.STOPPED : forge.getStatus();
+	}
 
-   public void stop()
-   {
-      forge.stop();
-   }
+	public ConverterFactory getConverterFactory()
+	{
+		return lookup(ConverterFactory.class);
+	}
 
-   public ContainerStatus getContainerStatus()
-   {
-      return (forge == null) ? ContainerStatus.STOPPED : forge.getStatus();
-   }
-
-   public ConverterFactory getConverterFactory()
-   {
-      return lookup(ConverterFactory.class);
-   }
-
-   public <S> S lookup(Class<S> service)
-   {
-      ExportedInstance<S> exportedInstance = null;
-      if (forge != null)
-      {
-         exportedInstance = forge.getAddonRegistry().getExportedInstance(
-                  service);
-      }
-      return (exportedInstance == null) ? null : exportedInstance.get();
-   }
+	public <S> S lookup(Class<S> service)
+	{
+		ExportedInstance<S> exportedInstance = null;
+		if (forge != null)
+		{
+			exportedInstance = forge.getAddonRegistry().getExportedInstance(
+					service);
+		}
+		return (exportedInstance == null) ? null : exportedInstance.get();
+	}
 }

@@ -87,5 +87,29 @@ public abstract class ComponentBuilder
 
       return handles;
    }
+	// TODO replace with the Eclipse class
+//	public boolean handles(InputComponent<?, ?> input) {
+//		boolean handles = false;
+//		for (Class<?> inputType : getSupportedInputComponentTypes()) {
+//			if (inputType.isInstance(input)) {
+//				handles = true;
+//				break;
+//			}
+//		}
+//
+//		if (handles) {
+//			InputType inputTypeHint = InputComponents.getInputType(input);
+//			if (inputTypeHint != null && inputTypeHint != InputType.DEFAULT) {
+//				handles = Proxies.areEquivalent(inputTypeHint,
+//						getSupportedInputType());
+//			} else {
+//				// Fallback to standard type
+//				handles = getProducedType().isAssignableFrom(
+//						input.getValueType());
+//			}
+//		}
+//
+//		return handles;
+//	}
 
 }

@@ -27,7 +27,8 @@ public class TextBoxComponentBuilder extends ComponentBuilder {
 
 	@Override
 	public JComponent build(final InputComponent<?, Object> input,
-			Container container) {
+	                        Container container)
+	{
 		final JTextField textField = new JTextField();
 		// Set Default Value
 		final ConverterFactory converterFactory = ForgeService.INSTANCE
@@ -39,19 +40,22 @@ public class TextBoxComponentBuilder extends ComponentBuilder {
 
 		textField.getDocument().addDocumentListener(new DocumentListener() {
 			@Override
-			public void removeUpdate(DocumentEvent e) {
+			public void removeUpdate(DocumentEvent e)
+			{
 				InputComponents.setValueFor(converterFactory, input,
 						textField.getText());
 			}
 
 			@Override
-			public void insertUpdate(DocumentEvent e) {
+			public void insertUpdate(DocumentEvent e)
+			{
 				InputComponents.setValueFor(converterFactory, input,
 						textField.getText());
 			}
 
 			@Override
-			public void changedUpdate(DocumentEvent e) {
+			public void changedUpdate(DocumentEvent e)
+			{
 				InputComponents.setValueFor(converterFactory, input,
 						textField.getText());
 			}
@@ -64,18 +68,21 @@ public class TextBoxComponentBuilder extends ComponentBuilder {
 	}
 
 	@Override
-	protected Class<String> getProducedType() {
+	protected Class<String> getProducedType()
+	{
 		return String.class;
 	}
 
 	@Override
-	protected InputType getSupportedInputType() {
+	protected InputType getSupportedInputType()
+	{
 		return InputType.TEXTBOX;
 	}
 
 	@Override
-	protected Class<?>[] getSupportedInputComponentTypes() {
-		return new Class<?>[] { UIInput.class };
+	protected Class<?>[] getSupportedInputComponentTypes()
+	{
+		return new Class<?>[]{UIInput.class};
 	}
 
 }
