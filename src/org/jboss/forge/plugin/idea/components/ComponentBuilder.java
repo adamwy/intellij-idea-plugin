@@ -56,60 +56,28 @@ public abstract class ComponentBuilder
     * @param input
     * @return
     */
-   public boolean handles(InputComponent<?, ?> input)
-   {
-      boolean handles = false;
-      InputType inputTypeHint = InputComponents.getInputType(input);
+	public boolean handles(InputComponent<?, ?> input) {
+		boolean handles = false;
+		for (Class<?> inputType : getSupportedInputComponentTypes()) {
+			if (inputType.isInstance(input)) {
+				handles = true;
+				break;
+			}
+		}
 
-      for (Class<?> inputType : getSupportedInputComponentTypes())
-      {
-         if (inputType.isAssignableFrom(input.getClass()))
-         {
-            handles = true;
-            break;
-         }
-      }
+		if (handles) {
+			InputType inputTypeHint = InputComponents.getInputType(input);
+			if (inputTypeHint != null && inputTypeHint != InputType.DEFAULT) {
+				handles = Proxies.areEquivalent(inputTypeHint,
+						getSupportedInputType());
+			} else {
+				// Fallback to standard type
+				handles = getProducedType().isAssignableFrom(
+						input.getValueType());
+			}
+		}
 
-      if (handles)
-      {
-         if (inputTypeHint != null)
-         {
-            handles = Proxies.areEquivalent(inputTypeHint,
-                     getSupportedInputType());
-         }
-         else
-         {
-            // Fallback to standard type
-            handles = getProducedType().isAssignableFrom(
-                     input.getValueType());
-         }
-      }
-
-      return handles;
-   }
-	// TODO replace with the Eclipse class
-//	public boolean handles(InputComponent<?, ?> input) {
-//		boolean handles = false;
-//		for (Class<?> inputType : getSupportedInputComponentTypes()) {
-//			if (inputType.isInstance(input)) {
-//				handles = true;
-//				break;
-//			}
-//		}
-//
-//		if (handles) {
-//			InputType inputTypeHint = InputComponents.getInputType(input);
-//			if (inputTypeHint != null && inputTypeHint != InputType.DEFAULT) {
-//				handles = Proxies.areEquivalent(inputTypeHint,
-//						getSupportedInputType());
-//			} else {
-//				// Fallback to standard type
-//				handles = getProducedType().isAssignableFrom(
-//						input.getValueType());
-//			}
-//		}
-//
-//		return handles;
-//	}
+		return handles;
+	}
 
 }

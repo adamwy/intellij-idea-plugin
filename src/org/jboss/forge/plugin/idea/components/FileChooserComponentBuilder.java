@@ -33,7 +33,8 @@ public class FileChooserComponentBuilder extends ComponentBuilder {
 
 	@Override
 	public JComponent build(final InputComponent<?, Object> input,
-			Container container) {
+	                        Container container)
+	{
 		// Added Label
 		container.add(new JLabel(input.getLabel() == null ? input.getName()
 				: input.getLabel()));
@@ -42,7 +43,8 @@ public class FileChooserComponentBuilder extends ComponentBuilder {
 				new ActionListener() {
 
 					@Override
-					public void actionPerformed(ActionEvent e) {
+					public void actionPerformed(ActionEvent e)
+					{
 						// TODO Auto-generated method stub
 
 					}
@@ -58,19 +60,22 @@ public class FileChooserComponentBuilder extends ComponentBuilder {
 		final JTextField textField = fileField.getTextField();
 		textField.getDocument().addDocumentListener(new DocumentListener() {
 			@Override
-			public void removeUpdate(DocumentEvent e) {
+			public void removeUpdate(DocumentEvent e)
+			{
 				InputComponents.setValueFor(converterFactory, input,
 						textField.getText());
 			}
 
 			@Override
-			public void insertUpdate(DocumentEvent e) {
+			public void insertUpdate(DocumentEvent e)
+			{
 				InputComponents.setValueFor(converterFactory, input,
 						textField.getText());
 			}
 
 			@Override
-			public void changedUpdate(DocumentEvent e) {
+			public void changedUpdate(DocumentEvent e)
+			{
 				InputComponents.setValueFor(converterFactory, input,
 						textField.getText());
 			}
@@ -83,18 +88,21 @@ public class FileChooserComponentBuilder extends ComponentBuilder {
 	}
 
 	@Override
-	protected Class<File> getProducedType() {
+	protected Class<File> getProducedType()
+	{
 		return File.class;
 	}
 
 	@Override
-	protected InputType getSupportedInputType() {
+	protected InputType getSupportedInputType()
+	{
 		return InputType.FILE_PICKER;
 	}
 
 	@Override
-	protected Class<?>[] getSupportedInputComponentTypes() {
-		return new Class<?>[] { UIInput.class };
+	protected Class<?>[] getSupportedInputComponentTypes()
+	{
+		return new Class<?>[]{UIInput.class};
 	}
 
 }

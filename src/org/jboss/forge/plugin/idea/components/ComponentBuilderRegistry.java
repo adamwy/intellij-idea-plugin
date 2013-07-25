@@ -10,7 +10,7 @@ package org.jboss.forge.plugin.idea.components;
 import org.jboss.forge.addon.ui.input.InputComponent;
 
 /**
- * A factory for {@link ControlBuilder} instances.
+ * A factory for {@link ComponentBuilder} instances.
  *
  * @author <a href="mailto:ggastald@redhat.com">George Gastaldi</a>
  *
@@ -21,11 +21,10 @@ public enum ComponentBuilderRegistry
 
    private ComponentBuilder[] componentBuilders = {
             new CheckboxComponentBuilder(),
-            new ComboEnumComponentBuilder(),
             new ComboComponentBuilder(),
             new RadioComponentBuilder(),
             new FileChooserComponentBuilder(),
-            // new CheckboxTableComponentBuilder(),
+            new CheckboxTableComponentBuilder(),
             new TextBoxComponentBuilder(),
             new PasswordComponentBuilder(),
             new FallbackTextBoxComponentBuilder() };

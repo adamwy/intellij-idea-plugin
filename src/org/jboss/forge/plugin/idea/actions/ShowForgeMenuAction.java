@@ -40,6 +40,8 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.ListCellRendererWrapper;
 import com.intellij.ui.components.JBList;
 
+import java.util.logging.Logger;
+
 /**
  * Creates a popup list and displays all the currently registered
  * {@link UICommand} instances
@@ -49,12 +51,16 @@ import com.intellij.ui.components.JBList;
 public class ShowForgeMenuAction extends AnAction {
 	volatile boolean active;
 
+	static Logger logger = Logger.getLogger("ShowForgeMenuAction");
+
 	@Override
 	public void actionPerformed(final AnActionEvent e)
 	{
 		if (active)
 			return;
 		active = true;
+
+		logger.info("Started");
 
 		final VirtualFile[] selectedFiles = e.getData(PlatformDataKeys.VIRTUAL_FILE_ARRAY);
 		final JBList list = new JBList();
