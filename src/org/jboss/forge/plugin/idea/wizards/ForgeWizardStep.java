@@ -6,13 +6,9 @@
  */
 package org.jboss.forge.plugin.idea.wizards;
 
-import java.util.List;
-
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-
+import com.intellij.ui.wizard.WizardNavigationState;
+import com.intellij.ui.wizard.WizardStep;
 import net.miginfocom.swing.MigLayout;
-
 import org.jboss.forge.addon.ui.UICommand;
 import org.jboss.forge.addon.ui.context.UIContext;
 import org.jboss.forge.addon.ui.input.InputComponent;
@@ -24,18 +20,18 @@ import org.jboss.forge.plugin.idea.components.ComponentBuilderRegistry;
 import org.jboss.forge.plugin.idea.context.UIBuilderImpl;
 import org.jboss.forge.proxy.Proxies;
 
-import com.intellij.ui.wizard.WizardNavigationState;
-import com.intellij.ui.wizard.WizardStep;
+import javax.swing.*;
+import java.util.List;
 
 public class ForgeWizardStep extends WizardStep<ForgeWizardModel> {
 	private UICommand uiCommand;
-	private UIContext context;
+	private UIContext uiContext;
 
-	public ForgeWizardStep(UICommand command, UIContext context)
+	public ForgeWizardStep(UICommand command, UIContext uiContext)
 	{
 		super(command.getMetadata().getDescription());
 		this.uiCommand = command;
-		this.context = context;
+		this.uiContext = uiContext;
 	}
 
 	public UICommand getUICommand()
@@ -47,7 +43,7 @@ public class ForgeWizardStep extends WizardStep<ForgeWizardModel> {
 	@Override
 	public JComponent prepare(WizardNavigationState state)
 	{
-		UIBuilderImpl uiBuilder = new UIBuilderImpl(context);
+		UIBuilderImpl uiBuilder = new UIBuilderImpl(uiContext);
 		try
 		{
 			uiCommand.initializeUI(uiBuilder);
@@ -96,8 +92,7 @@ public class ForgeWizardStep extends WizardStep<ForgeWizardModel> {
 		} else
 		{
 			Class<? extends UICommand> successor = nextCommand.getNext();
-			// Do we have any pages already displayed ? (Did we went back
-			// already ?)
+			// Do we have any pages already displayed ? (Did we went back already ?)
 			ForgeWizardStep nextPage = (ForgeWizardStep) super.onNext(model);
 			if (nextPage == null
 					|| !isNextStepAssignableFrom(nextPage, successor))

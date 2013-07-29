@@ -27,6 +27,7 @@ public enum ComponentBuilderRegistry
             new CheckboxTableComponentBuilder(),
             new TextBoxComponentBuilder(),
             new PasswordComponentBuilder(),
+		    new JavaPackageChooserComponentBuilder(),
             new FallbackTextBoxComponentBuilder() };
 
    public ComponentBuilder getBuilderFor(InputComponent<?, ?> input)
